@@ -1,0 +1,29 @@
+@startuml classes
+
+class Pessoa {
+  -cpf
+  -nome
+  -endereco
+}
+
+class Jogador {
+  -salario
+  -nr_camisa
+}
+
+class Time {
+  -nome
+  -liga
+}
+
+class Tecnico {
+  -descricao
+  -nacionalidade
+}
+
+Tecnico -- Time
+Time *-- Jogador
+Pessoa <- Jogador
+Pessoa <- Tecnico
+
+@enduml
