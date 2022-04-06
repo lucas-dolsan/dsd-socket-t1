@@ -1,27 +1,32 @@
 import sys,os
 sys.path.append(os.getcwd())
 
+from src.common.response import Response
+from src.components.server.repositories.person_repository import PersonRepository
+from src.components.server.request_router import RequestRouter
+from src.common.request import Request
 from src.common.connection import Connection
-from src.common.models.person import Person
 from parallel_socket_server import ParallelSocketServer
 
-people=[]
-
-print(f'before: people={people}')
-
 def on_connection_received_handler(connection: Connection):
+        request_router=RequestRouter()
+        
         while True:
-            message = connection.read_message()
-
-            if not message:
+            request_json = connection.read()
+            if not request_json:
                 continue
 
-            person = Person.from_json(message.payload)
+            request = Request.from_json(request_json)
 
-            people.append(person)
+            request_router.route_to_controller(request)
 
-            print(f'after: people={people}')
-            
+            response=Response(
+                payload=201,
+                request_id=request.id,
+            )
+
+            connection.send(response.to_json())
+
             connection.close()
 
 server = ParallelSocketServer()
@@ -29,7 +34,7 @@ server.listen(on_connection_received_handler)
 
 # TODO
 #  - choose a extended theme in moodle
-#  - properly close the connection on exit
+#  - properly close the connection on exit (BadFileDescriptor)
 #  - generalize Message
 #  - add an Id to Message
 #  - create a Request extending Message

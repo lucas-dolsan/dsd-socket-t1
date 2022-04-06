@@ -1,8 +1,10 @@
 import sys,os
 sys.path.append(os.getcwd())
 
+from src.common.response import Response
+from uuid import uuid4 as Uuid
+from src.common.request import Request
 from src.common.actions import Actions
-from src.common.message import Message
 from src.components.client.socket_client import SocketClient
 from src.common.models.person import Person
 
@@ -12,6 +14,7 @@ def get_person_from_stdin() -> Person:
     address = input('person address: ')
 
     return Person(
+        id=Uuid(),
         name=name,
         cpf=cpf,
         address=address
@@ -24,9 +27,18 @@ if not connection:
     raise Exception("unable to connect")
 
 person = get_person_from_stdin()
-message = Message(Actions.CREATE, person)
+request = Request(payload=person, action=Actions.CREATE)
 
-print(f'sending message: {message}')
+connection.send(request.to_json())
 
-connection.send_message(message)
+while True:
+    response_json = connection.read()
+    if not response_json:
+        continue
+
+    response = Response.from_json(response_json)
+
+    print(response)
+
+
 

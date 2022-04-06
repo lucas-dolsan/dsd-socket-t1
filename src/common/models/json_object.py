@@ -1,18 +1,21 @@
 import json
-import six
-import abc
+from dataclasses import dataclass
+from uuid import UUID
+@dataclass
+class JsonParser:
+    def parse(object: any) -> dict:
+        if type(object) is UUID:
+            return str(object)
 
-@six.add_metaclass(abc.ABCMeta)
-class JsonObject():
-    def to_json(self):
-        return json.dumps(
-            self,
-            default=lambda obj: obj.__dict__,
-            sort_keys=True, indent=2
-        )
+        if hasattr(object, '__dict__'):
+            return object.__dict__
 
-    @abc.abstractmethod
-    def from_json(json_object) -> object:
+@dataclass
+class JsonObject:
+    def to_json(self) -> str:
+        return json.dumps(self, default=JsonParser.parse)
+
+    def from_json(json_object: str) -> object:
         raise NotImplementedError
 
     def __str__(self) -> str:

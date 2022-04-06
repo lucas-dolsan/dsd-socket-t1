@@ -1,29 +1,42 @@
 @startuml classes
+skinparam classAttributeIconSize 0
+
+class JsonObject {
+  + from_json(json_object: String): JsonObject
+  + to_json(): String
+}
+
+Class Model {
+  - id: UUID 
+}
 
 class Pessoa {
-  -cpf
-  -nome
-  -endereco
+  -  cpf: String
+  -  nome: String
+  -  endereco: String
 }
 
-class Jogador {
-  -salario
-  -nr_camisa
+class Palestrante {
+  - tema: String
+  - credenciais: String
 }
 
-class Time {
-  -nome
-  -liga
+class Conferencia {
+  - titulo: String
+  - ano: Integer
 }
 
-class Tecnico {
-  -descricao
-  -nacionalidade
+class Espectador {
+  - instituicao_de_origem: String
+  - grau_de_escolaridade: String
 }
 
-Tecnico -- Time
-Time *-- Jogador
-Pessoa <- Jogador
-Pessoa <- Tecnico
+JsonObject <|- Model
+Model <|- Pessoa
+
+Conferencia "1" o-- "n" Pessoa
+
+Pessoa <|-- Espectador
+Pessoa <|-- Palestrante
 
 @enduml

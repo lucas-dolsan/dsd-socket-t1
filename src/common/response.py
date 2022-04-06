@@ -1,19 +1,19 @@
+from dataclasses import dataclass
 import json
-from src.common.actions import Actions
-from src.common.models.json_object import JsonObject
+from uuid import UUID
+from src.common.message import Message
+from src.utils.polyfills import kwargs_only
 
-class Message(JsonObject):
-    def __init__(self, action: Actions, payload: str):
-        self.action = action
-        self.payload = payload
+@kwargs_only
+@dataclass
+class Response(Message):
+    request_id: UUID = None
 
-    def from_json(json_object) -> object:
-        data = json.loads(json_object)
+    def from_json(json_object: str) -> "Response":
+      data=json.loads(json_object)
 
-        return Message(
-            action=Actions[data['action']],
-            payload=json.dumps(data['payload'])
-        )
-
-    def __str__(self) -> str:
-        return f'action={self.action}, payload={self.payload}'
+      return Response(
+        id=data['id'],
+        payload=data['payload'],
+        request_id=data['request_id']
+      )

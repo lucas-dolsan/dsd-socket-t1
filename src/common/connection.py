@@ -1,36 +1,34 @@
-import json
+from dataclasses import dataclass
+from socket import SHUT_RD, socket
 
-from src.common.message import Message
+from src.common.socket_message_encoder import SocketMessageEncoder
 
 DEFAULT_BUFFER_SIZE=4096
+DEFAULT_ENCODING='utf-8'
+DEBUG=False
 
+@dataclass
 class Connection:
-    def __init__(self, socket_connection, address, port):
-        self.socket_connection = socket_connection
-        self.address = address
-        self.port = port
+    socket_connection: socket
+    address: str
+    port: int
+    message_encoder=SocketMessageEncoder(encoding=DEFAULT_ENCODING)
 
-        print(f'Host {address}:{str(port)} connected')
-
-    def read(self):
+    def read(self) -> str:
         data = self.socket_connection.recv(DEFAULT_BUFFER_SIZE)
-        return data
+        decoded_data = self.message_encoder.decode(data)
+        if DEBUG:
+            print(f'Receiving data: {decoded_data}')
+        return decoded_data
 
-    def send_json(self, json_message: str):
-        data = bytes(json_message, encoding="utf-8")
-        self.socket_connection.send(data)
+    def send(self, data: str):
+        encoded_data=self.message_encoder.encode(data)
+        if DEBUG:
+            print(f'Sending data: {data}')
+        self.socket_connection.send(encoded_data)
 
-    def read_json(self):
-        data = self.read()
-        if data:
-            return json.loads(data)
-
-    def send_message(self, message: Message):
-            self.send_json(message.to_json())
-
-    def read_message(self) -> Message:
-        json_message = self.read()
-        return Message.from_json(json_message)
-            
     def close(self):
-        self.socket_connection.close()
+        pass
+        # TODO can't figure out a way to close everything and not throw an error
+        # self.socket_connection.shutdown(SHUT_RD)
+        # self.socket_connection.close()
