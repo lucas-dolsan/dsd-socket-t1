@@ -18,7 +18,11 @@ class MemoryStorageAdapter(StorageAdapter):
     return list(self._get_model(model_class).values())
 
   def findById(self, id: UUID, model_class: str) -> Model:
-    return self._get_model(model_class)[id]
+    try:
+      result = self._get_model(model_class)[id]
+      return result
+    except KeyError:
+      return None
 
   def create(self, data: Model, model_class: str):
     self._get_model(model_class)[data.id] = data

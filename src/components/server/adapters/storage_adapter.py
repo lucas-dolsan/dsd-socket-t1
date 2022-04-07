@@ -1,11 +1,8 @@
-from dataclasses import dataclass
 from uuid import UUID
 from typing import List
 from src.common.models.model import Model
 
-@dataclass
 class StorageAdapter:
-
   def findAll(self) -> List[Model]:
     raise NotImplementedError
 
