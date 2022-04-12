@@ -7,13 +7,12 @@ from src.components.server.controllers.person_controller import PersonController
 @dataclass
 class RequestRouter:
     controllers={
-        str(Person.__name__): PersonController(),
+        "person": PersonController(),
     }
 
-    def get_controller(self, model_identifier: str):
-        return self.controllers[model_identifier]
+    def get_controller(self, request: Request):
+        return self.controllers[request.route]
 
     def route_to_controller(self, request: Request):
-        key = request.get_key_from_identifier()
-        controller = self.get_controller(key)
+        controller = self.get_controller(request)
         controller.receive_request(request)

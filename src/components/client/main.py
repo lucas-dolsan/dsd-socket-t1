@@ -27,7 +27,7 @@ if not connection:
     raise Exception("unable to connect")
 
 person = get_person_from_stdin()
-request = Request(payload=person, action=Actions.CREATE)
+request = Request(payload=person, action=Actions.CREATE, route="person")
 
 connection.send(request.to_json())
 
