@@ -8,22 +8,22 @@ from src.common.request import Request
 
 test_context={
   "controllers": {
-        str(Model.__name__): "ExpectedController",
+        "ExampleModel": "ExpectedController",
   },
   "request_args": {
+    "route": "ExampleModel",
     "payload": Model("1"),
     "action": Actions.CREATE
   }
 }
 
 class TestRequestRouter:
-    def test_route_to_controller(self):
-        request = Request(**test_context["request_args"])
+  def test_route_to_controller(self):
+    request = Request(**test_context["request_args"])
 
-        request_router=RequestRouter()
-        request_router.controllers = test_context['controllers']
+    request_router=RequestRouter()
+    request_router.controllers = test_context['controllers']
 
-        key = request.get_key_from_identifier()
-        routed_controller = request_router.get_controller(key)
+    routed_controller = request_router.get_controller(request=request)
 
-        assert routed_controller == "ExpectedController"
+    assert routed_controller == "ExpectedController"

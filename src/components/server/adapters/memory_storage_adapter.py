@@ -19,7 +19,8 @@ class MemoryStorageAdapter(StorageAdapter):
 
   def findById(self, id: UUID, model_class: str) -> Model:
     try:
-      result = self._get_model(model_class)[id]
+      model_store = self._get_model(model_class)
+      result = model_store.get(id)
       return result
     except KeyError:
       return None

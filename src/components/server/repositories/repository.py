@@ -9,17 +9,17 @@ class Repository():
   storage=Storage
 
   def findAll(self) -> List[Model]:
-    return self.storage.findAll(self.model.__class__)
+    return self.storage.findAll(self.model.__name__)
 
   def findById(self, id: UUID) -> Model:
-    return self.storage.findById(id, self.model.__class__)
+    return self.storage.findById(id, self.model.__name__)
 
   def create(self, data: Model):
-    self.storage.create(data, self.model.__class__)
+    self.storage.create(data, self.model.__name__)
 
   def deleteById(self, id: UUID):
-    self.storage.deleteById(id, self.model.__class__)
+    self.storage.deleteById(id, self.model.__name__)
 
   def updateById(self, id: UUID, newData: Model):
-    self.storage.updateById(id, newData, self.model.__class__)
+    self.storage.updateById(id, newData, self.model.__name__)
 

@@ -29,9 +29,4 @@ class TestRequest:
 
     assert type(converted_request).__name__ is Request.__name__
 
-  def test_model_identifier(self):
-    request = TestRequest.create_request()
-    model_identifier=str(SampleClass.__name__)
-
-    assert request.get_key_from_identifier() == model_identifier
     
