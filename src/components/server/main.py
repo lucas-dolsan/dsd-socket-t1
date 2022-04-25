@@ -17,12 +17,7 @@ def on_connection_received_handler(connection: Connection):
 
             request = Request.from_json(request_json)
 
-            request_router.route_to_controller(request)
-
-            response=Response(
-                payload=201,
-                request_id=request.id,
-            )
+            response = request_router.handle_request(request)
 
             connection.send(response.to_json())
 

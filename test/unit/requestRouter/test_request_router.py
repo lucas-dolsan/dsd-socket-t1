@@ -18,7 +18,7 @@ test_context={
 }
 
 class TestRequestRouter:
-  def test_route_to_controller(self):
+  def test_handle_request(self):
     request = Request(**test_context["request_args"])
 
     request_router=RequestRouter()
