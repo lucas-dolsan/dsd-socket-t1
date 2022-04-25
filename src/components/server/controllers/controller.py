@@ -15,7 +15,6 @@ class Controller:
             Actions.READ: self.read,
             Actions.UPDATE: self.update,
             Actions.DELETE: self.delete,
-
         }
         request_handler=action_map[request.action]
         return request_handler(request)
@@ -53,7 +52,6 @@ class Controller:
             request_id=request.id,
         )
 
-
     def delete(self, request: Request):
         id = request.payload["id"]
         self.repository.deleteById(id)
@@ -62,4 +60,3 @@ class Controller:
             payload={ "status": 201 },
             request_id=request.id,
         )
-

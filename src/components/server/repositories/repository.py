@@ -21,5 +21,5 @@ class Repository():
     self.storage.deleteById(id, self.model.__name__)
 
   def updateById(self, id: UUID, newData: Model):
-    self.storage.updateById(id, newData, self.model.__name__)
+    return self.storage.updateById(id, newData, self.model.__name__)
 

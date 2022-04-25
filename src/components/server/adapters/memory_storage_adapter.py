@@ -33,4 +33,5 @@ class MemoryStorageAdapter(StorageAdapter):
 
   def updateById(self, id: UUID, newData: Model, model_class: str):
     self._get_model(model_class)[id] = newData
+    return newData
     

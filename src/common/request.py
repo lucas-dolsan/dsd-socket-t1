@@ -15,6 +15,6 @@ class Request(Message):
       return Request(
         id=data['id'],
         payload=json.dumps(data['payload']),
-        action=Actions[data['action']],
+        action=data['action'],
         route=data['route']
       )
