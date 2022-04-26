@@ -20,3 +20,5 @@
 
   Para rodar o cliente:
   ```py src/components/client/main.py```
+
+  *Os entregáveis estão na pasta docs*
