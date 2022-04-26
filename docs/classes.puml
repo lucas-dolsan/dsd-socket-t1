@@ -1,42 +1,79 @@
 @startuml classes
+
 skinparam classAttributeIconSize 0
 
-class JsonObject {
-  + from_json(json_object: String): JsonObject
-  + to_json(): String
+class Repository {
+  model: Model
+  - storage: StorageAdapter
+
+  + findAll(): List<Model>
+  + findById(id: UUID): Model
+  + create(data: Model): Void
+  + deleteById(id: UUID): Void
+  + updateById(id: UUID, newData: Model): Void
 }
 
-Class Model {
-  - id: UUID 
+class SocketClient {
+  - socket: socket
 }
 
-class Pessoa {
-  -  cpf: String
-  -  nome: String
-  -  endereco: String
+class Controller {
+  - repository: Repository
+
+  + create(request: Request): Void 
+  + update(request: Request): Void 
+  + delete(request: Request): Void 
+  + list(request: Request): List<Model>
+  + read(request: Request): Model
 }
 
-class Palestrante {
-  - tema: String
-  - credenciais: String
+class OperationController {
+  - client: SocketClient
 }
 
-class Conferencia {
-  - titulo: String
-  - ano: Integer
+class Person {
+  - cpf: String
+  - name: String
+  - address: String
 }
 
-class Espectador {
-  - instituicao_de_origem: String
-  - grau_de_escolaridade: String
+class Model {
+  - id: UUID
 }
 
-JsonObject <|- Model
-Model <|- Pessoa
+interface StorageAdapter {
+  + findAll(self): List<Model>
+  + findById(self, id: UUID): Model
+  + create(self, data: Model)
+  + deleteById(self, id: UUID)
+  + updateById(self, id: UUID, newData: Model)
+}
 
-Conferencia "1" o-- "n" Pessoa
+class MemoryStorageAdapter {
+  - store: HashMap
+}
 
-Pessoa <|-- Espectador
-Pessoa <|-- Palestrante
+class PersonRepository {
+  - model: Person
 
-@enduml
+  + findByCpf(cpf: String): Person:
+  + updateByCpf(cpf, payload): Void
+  + deleteByCpf(cpf: String): Void
+} 
+
+class PersonController {
+  - repository: PersonRepository
+
+  + find_by_cpf(request: Request): Person
+  + update_by_cpf(request: Request): Person
+  + delete_by_cpf(request: Request): Person
+}
+
+Person --|> Model
+PersonController --|> Controller
+PersonRepository --|> Repository
+MemoryStorageAdapter ..|> StorageAdapter
+PersonRepository o-- MemoryStorageAdapter
+PersonRepository o-- Person
+OperationController o-- SocketClient
+PersonController o-- PersonRepository
