@@ -13,11 +13,15 @@ class PersonRepository(Repository):
     for entity in entity_list:
       if entity.cpf == cpf:
         return entity
-    
-def updateByCpf(self, payload):
-    payload=json.loads(payload)
-    cpf = payload["cpf"]
+      
+  def updateByCpf(self, cpf, payload):
+      entity = self.findByCpf(cpf)
 
+      person = Person.from_json(payload)
+
+      return self.storage.updateById(entity.id, person, self.model.__name__)
+
+  def deleteByCpf(self, cpf: str):
     entity = self.findByCpf(cpf)
     
-    self.storage.updateById(entity.id, entity, self.model.__name__)
+    self.storage.deleteById(entity.id, self.model.__name__)

@@ -20,23 +20,11 @@ class PersonController(Controller):
             Actions.UPDATE: self.update,
             Actions.DELETE: self.delete,
             PersonActions.READ_BY_CPF: self.find_by_cpf,
-            PersonActions.UPDATE_BY_CPF: self.update_by_cpf 
+            PersonActions.UPDATE_BY_CPF: self.update_by_cpf, 
+            PersonActions.DELETE_BY_CPF: self.delete_by_cpf 
         }
         request_handler=action_map[request.action]
         return request_handler(request)
-
-    def update_by_cpf(self, request: Request) -> Person:
-        payload=json.loads(request.payload)
-        cpf = payload["cpf"]
-
-        entity = self.repository.updateById(cpf, payload)
-
-        response_payload={ "status": 200, "data": entity }
-
-        return Response(
-            payload=response_payload,
-            request_id=request.id,
-        )
 
 
     def find_by_cpf(self, request: Request) -> Person:
@@ -47,10 +35,40 @@ class PersonController(Controller):
 
         if entity is None:
             payload={ "status": 404, "data": None }
-        else:
-            payload={ "status": 200, "data": entity }
+            return Response(payload=payload, request_id=request.id)
 
-        return Response(
-            payload=payload,
-            request_id=request.id,
-        )
+        payload={ "status": 200, "data": entity }
+        return Response(payload=payload, request_id=request.id)
+
+
+    def update_by_cpf(self, request: Request) -> Person:
+        payload=json.loads(request.payload)
+        cpf = payload["cpf"]
+
+        entity = self.repository.findByCpf(cpf)
+
+        if entity is None:
+            response_payload={ "status": 404, "data": None }
+            return Response(payload=response_payload, request_id=request.id)
+
+        entity=self.repository.updateByCpf(cpf, request.payload)
+        response_payload={ "status": 200, "data": entity }
+        
+        return Response(payload=response_payload, request_id=request.id)
+
+
+    def delete_by_cpf(self, request: Request) -> Person:
+        payload=json.loads(request.payload)
+        cpf = payload["cpf"]
+
+        entity = self.repository.findByCpf(cpf)
+
+        if entity is None:
+            response_payload={ "status": 404, "data": None }
+            return Response(payload=response_payload, request_id=request.id)
+
+        self.repository.deleteByCpf(cpf)
+
+        response_payload={ "status": 200, "data": None }
+        return Response(payload=response_payload, request_id=request.id )
+

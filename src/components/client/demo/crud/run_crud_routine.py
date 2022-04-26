@@ -4,6 +4,7 @@ sys.path.append(os.getcwd())
 from src.components.client.demo.insert_person import insert_person
 from src.components.client.demo.read_person_by_cpf import read_person_by_cpf
 from src.components.client.demo.update_person_by_cpf import update_person_by_cpf
+from src.components.client.demo.delete_person_by_cpf import delete_person_by_cpf
 
 from src.common.response import Response
 from src.components.client.socket_client import SocketClient
@@ -31,6 +32,9 @@ def read_response(connection):
 
 connection=setup_connection()
 
+
 insert_person(connection, read_response)
 read_person_by_cpf(connection, read_response)
 update_person_by_cpf(connection, read_response)
+delete_person_by_cpf(connection, read_response)
+read_person_by_cpf(connection, read_response)

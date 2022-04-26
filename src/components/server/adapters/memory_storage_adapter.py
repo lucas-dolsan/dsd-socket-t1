@@ -32,6 +32,7 @@ class MemoryStorageAdapter(StorageAdapter):
     del self._get_model(model_class)[id]
 
   def updateById(self, id: UUID, newData: Model, model_class: str):
+    newData.id = id
     self._get_model(model_class)[id] = newData
     return newData
     
