@@ -1,5 +1,3 @@
-from argparse import Action
-from calendar import c
 from enum import Enum, unique
 
 @unique
@@ -8,7 +6,7 @@ class Actions(str, Enum):
     READ='READ'
     UPDATE='UPDATE'
     DELETE='DELETE'
-
+    LIST='LIST'
 
     def __dict__(self):
         return self.value
@@ -18,7 +16,8 @@ class Actions(str, Enum):
             'c': Actions.CREATE,
             'r': Actions.READ,
             'u': Actions.UPDATE,
-            'd': Actions.DELETE
+            'd': Actions.DELETE,
+            'l': Actions.LIST
         }
 
         return operation_map[op]

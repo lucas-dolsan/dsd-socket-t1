@@ -19,12 +19,30 @@ class PersonController(Controller):
             Actions.READ: self.read,
             Actions.UPDATE: self.update,
             Actions.DELETE: self.delete,
+            Actions.LIST: self.list,
             PersonActions.READ_BY_CPF: self.find_by_cpf,
             PersonActions.UPDATE_BY_CPF: self.update_by_cpf, 
             PersonActions.DELETE_BY_CPF: self.delete_by_cpf 
         }
         request_handler=action_map[request.action]
         return request_handler(request)
+
+    def create(self, request: Request):
+        new_person: Person = self.repository.model.from_json(request.payload)
+      
+        person = self.repository.findByCpf(new_person.cpf)
+        already_exists = bool(person)
+
+        if already_exists:
+            response_payload={ "status": 400, "data": person }
+            return Response(payload=response_payload, request_id=request.id)
+
+        self.repository.create(new_person)
+
+        return Response(
+            payload={ "status": 201 },
+            request_id=request.id,
+        )
 
 
     def find_by_cpf(self, request: Request) -> Person:

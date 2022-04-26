@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 from src.common.actions import Actions
 from src.common.models.model import Model
 from src.common.request import Request
@@ -15,6 +16,7 @@ class Controller:
             Actions.READ: self.read,
             Actions.UPDATE: self.update,
             Actions.DELETE: self.delete,
+            Actions.LIST: self.list
         }
         request_handler=action_map[request.action]
         return request_handler(request)
@@ -40,6 +42,14 @@ class Controller:
 
         return Response(
             payload=payload,
+            request_id=request.id,
+        )
+
+    def list(self, request: Request) -> List[Model]:
+        entities = self.repository.findAll()
+
+        return Response(
+            payload=entities,
             request_id=request.id,
         )
 

@@ -27,8 +27,8 @@ class Connection:
             print(f'Sending data: {data}')
         self.socket_connection.send(encoded_data)
 
+    def is_open(self):
+        return not self.socket_connection._closed
+
     def close(self):
-        pass
-        # TODO can't figure out a way to close everything and not throw an error
-        # self.socket_connection.shutdown(SHUT_RD)
-        # self.socket_connection.close()
+        self.socket_connection.close()

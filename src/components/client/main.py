@@ -1,6 +1,7 @@
 import sys,os
 sys.path.append(os.getcwd())
 
+from src.common.person_actions import PersonActions
 from src.common.response import Response
 from uuid import uuid4 as Uuid
 from src.common.request import Request
@@ -8,23 +9,29 @@ from src.common.actions import Actions
 from src.components.client.socket_client import SocketClient
 from src.common.models.person import Person
 
-    # return Person(
-    #     id=Uuid(),
-    #     name=name,
-    #     cpf=cpf,
-    #     address=address
-    # )
-
-from enum import Enum, unique
-
 class OperationController:
+    def __init__(self):
+        client = SocketClient()
+        connection = client.connect()
+
+        if not connection:
+            raise Exception("unable to connect")
+
+        self.connection=connection
+        print('connected to server')
+
+    def close(self):
+        self.connection.close()
+
     def read_operation(self):
         print('[C]REATE')
         print('[R]EAD')
         print('[U]PDATE')
         print('[D]ELETE')
+        print('[L]IST')
+        print("----------------------------------------------")
 
-        valid_op_list=['c', 'r', 'u', 'd']
+        valid_op_list=['c', 'r', 'u', 'd', 'l']
 
         op=None
 
@@ -38,16 +45,6 @@ class OperationController:
                 continue
 
         self.handle_operation(op)
-
-    def __init__(self):
-        client = SocketClient()
-        connection = client.connect()
-
-        if not connection:
-            raise Exception("unable to connect")
-
-        self.connection=connection
-        print('connected to server')
 
     def read_response(self):
         responded=False
@@ -66,7 +63,10 @@ class OperationController:
         self.connection.send(request.to_json())
         response = self.read_response()
 
-        print(response)
+        if isinstance(response.payload, list):
+            print(*response.payload, sep='\n')
+        else:
+            print(response.payload)
 
     def handle_operation(self, operation):
         action=Actions.from_operation(operation)
@@ -76,6 +76,7 @@ class OperationController:
             Actions.READ: self.read,
             Actions.UPDATE: self.update,
             Actions.DELETE: self.delete,
+            Actions.LIST: self.list,
         }
 
         action_map[action]()
@@ -103,15 +104,77 @@ class OperationController:
 
 
     def read(self):
-        pass
+        print(' -- READ --')
+        cpf = input('cpf: ')
+        
+        request=Request(
+            payload={ "cpf": cpf },
+            action=PersonActions.READ_BY_CPF,
+            route="person"
+        )
+        
+        self.send_request(request)
+
 
     def update(self):
-        pass
+        print(' -- UPDATE --')
+
+        cpf = input('cpf: ')
+        name = input('name: ')
+        address = input('address: ')
+
+        updated_person = Person(
+            id=Uuid(),
+            cpf=cpf,
+            name=name,
+            address=address,
+        )
+
+        request=Request(
+            payload=updated_person,
+            action=PersonActions.UPDATE_BY_CPF,
+            route="person"
+        )
+
+        self.send_request(request)
 
     def delete(self):
-        pass
+        print(' -- DELETE --')
+        cpf = input('cpf: ')
+
+        request=Request(
+            payload={ "cpf": cpf },
+            action=PersonActions.DELETE_BY_CPF,
+            route="person"
+        )
+
+        self.send_request(request)
 
 
-controller = OperationController()
+    def list(self):
+        print(' -- LIST --')
+        
+        request=Request(
+            payload=None,
+            action=Actions.LIST,
+            route="person"
+        )
+        
+        self.send_request(request)
 
-controller.read_operation()
+
+def main():
+    controller = OperationController()
+
+    exit=False
+
+    while not exit:
+        controller.read_operation()
+        print("----------------------------------------------")
+        answer=input("Type 'exit' to stop, or hit enter to run another operation \n")
+        if answer == "exit":
+            exit=True
+
+    controller.close()
+
+main()

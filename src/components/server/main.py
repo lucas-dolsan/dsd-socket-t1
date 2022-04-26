@@ -11,7 +11,7 @@ def on_connection_received_handler(connection: Connection):
     print('received client connection')
     request_router=RequestRouter()
     
-    while True:
+    while connection.is_open():
         request_json = connection.read()
         if not request_json:
             continue
@@ -21,8 +21,9 @@ def on_connection_received_handler(connection: Connection):
         response = request_router.handle_request(request)
 
         connection.send(response.to_json())
+        
+    print('client disconnected')
 
-        connection.close()
 
 server = ParallelSocketServer()
 server.listen(on_connection_received_handler)
